@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing App</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background: black;
+        }
+        .settings {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            cursor: move;
+        }
+        .minimized {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="settings" class="settings">
+        <label for="color">Color:</label>
+        <input type="color" id="color" value="#ffffff">
+        <label for="thickness">Thickness:</label>
+        <input type="range" id="thickness" min="1" max="10" value="2">
+        <button id="minimize">-</button>
+    </div>
+    <div id="minimized" class="minimized" style="display: none;">+</div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const settings = document.getElementById('settings');
+        const minimized = document.getElementById('minimized');
+        const colorPicker = document.getElementById('color');
+        const thicknessPicker = document.getElementById('thickness');
+        const minimizeButton = document.getElementById('minimize');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let drawing = false;
+        let penColor = '#ffffff';
+        let penThickness = 2;
+
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        colorPicker.addEventListener('input', (e) => penColor = e.target.value);
+        thicknessPicker.addEventListener('input', (e) => penThickness = e.target.value);
+
+        minimizeButton.addEventListener('click', () => {
+            settings.style.display = 'none';
+            minimized.style.display = 'block';
+        });
+
+        minimized.addEventListener('click', () => {
+            settings.style.display = 'block';
+            minimized.style.display = 'none';
+        });
+
+        function draw(e) {
+            if (!drawing) return;
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = penThickness;
+            ctx.lineCap = 'round';
+            ctx.lineTo(e.clientX, e.clientY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY);
+        }
+
+        // Make settings div draggable
+        settings.addEventListener('mousedown', (e) => {
+            let shiftX = e.clientX - settings.getBoundingClientRect().left;
+            let shiftY = e.clientY - settings.getBoundingClientRect().top;
+
+            function moveAt(pageX, pageY) {
+                settings.style.left = pageX - shiftX + 'px';
+                settings.style.top = pageY - shiftY + 'px';
+            }
+
+            function onMouseMove(e) {
+                moveAt(e.pageX, e.pageY);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+
+            settings.addEventListener('mouseup', () => {
+                document.removeEventListener('mousemove', onMouseMove);
+                settings.onmouseup = null;
+            });
+        });
+
+        settings.ondragstart = () => false;
+    </script>
+</body>
+</html>
