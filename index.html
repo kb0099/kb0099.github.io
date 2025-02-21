@@ -30,6 +30,14 @@
             border-radius: 50%;
             cursor: pointer;
         }
+        .collapsed {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -71,12 +79,13 @@
         });
 
         minimized.addEventListener('click', () => {
-            settings.style.display = 'block';
-            minimized.style.display = 'none';
+            settings.classList.toggle('collapsed');
         });
 
         function draw(e) {
             if (!drawing) return;
+            ctx.beginPath();
+            ctx.moveTo(e.clientX, e.clientY);
             ctx.strokeStyle = penColor;
             ctx.lineWidth = penThickness;
             ctx.lineCap = 'round';
