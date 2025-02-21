@@ -65,8 +65,14 @@
         let drawing = false;
         let penColor = '#ffffff';
         let penThickness = 2;
+        let prevX = 0;
+        let prevY = 0;
 
-        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            prevX = e.clientX;
+            prevY = e.clientY;
+        });
         canvas.addEventListener('mouseup', () => drawing = false);
         canvas.addEventListener('mousemove', draw);
 
@@ -85,14 +91,14 @@
         function draw(e) {
             if (!drawing) return;
             ctx.beginPath();
-            ctx.moveTo(e.clientX, e.clientY);
+            ctx.moveTo(prevX, prevY);
             ctx.strokeStyle = penColor;
             ctx.lineWidth = penThickness;
             ctx.lineCap = 'round';
             ctx.lineTo(e.clientX, e.clientY);
             ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX, e.clientY);
+            prevX = e.clientX;
+            prevY = e.clientY;
         }
 
         // Make settings div draggable
